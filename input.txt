@@ -1,4 +1,4 @@
 files/main.py plagiat1/main.py
-files/loss.py plagiat2/loss.py
-files/loss.py files/loss.py
-files/loss.py plagiat1/main.py
+files/lossy.py plagiat2/lossy.py
+files/lossy.py files/lossy.py
+files/lossy.py plagiat1/main.py

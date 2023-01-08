@@ -15,13 +15,32 @@ def LevensteinDistance(first: list, second: list) -> float:
                 dp[i][j] = dp[i - 1][j - 1]
             else:
                 dp[i][j] = min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + 1)
+    if len(first) == 0 or len(second) == 0:
+        return 0
     return 1 - (dp[len(first) - 1][len(second) - 1]) / max(len(first), len(second))
 
-
 class Visitor(ast.NodeVisitor):
-    def __init__(self):
-        pass
 
+    def __init__(self):
+        self.actions = []
+        self.names = []
+        self.imports = []
+
+    def visit(self, node: ast.AST):
+
+        if isinstance(node, (ast.stmt)):
+            self.actions.append(type(node).__name__)
+
+        elif isinstance(node, ast.Name):
+            self.names.append(node.id)
+
+        elif isinstance(node, ast.Import):
+            for el in node.names:
+                self.imports.append(el.name)
+        self.generic_visit(node)
+
+    def get_res(self):
+        return (self.actions, self.names, self.imports)
 
 
 parser = argparse.ArgumentParser(description="checks the plagiarism percent")
@@ -46,13 +65,12 @@ with open(input_file) as f, open(output, 'w') as o:
             visitor = Visitor()
             visitor.visit(tree)
             structure = visitor.get_res()
-            structure[0].sort()
 
 
             visitor2 = Visitor()
             visitor2.visit(tree2)
             structure2 = visitor2.get_res()
-            structure2[0].sort()
 
+            ans = 0.4* LevensteinDistance(sorted(structure[0]), sorted(structure2[0])) + 0.4 * LevensteinDistance(sorted(structure[1]), sorted(structure2[1])) + 0.2 * LevensteinDistance(sorted(structure[2]), sorted(structure2[2]))
 
-            o.write(str(LevensteinDistance(structure[0], structure2[0])) + '\n')
+            o.write(str(ans) + '\n')
